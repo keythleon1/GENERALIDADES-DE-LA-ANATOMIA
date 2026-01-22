@@ -3,370 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen de Anatomía ✨</title>
+    <title>Anatomía Quiz Azul 💙</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
 
+        /* --- NUEVA PALETA DE COLORES AZULES --- */
         :root {
-            --bg-color: #fdf2f8; /* Rosa muy pálido de fondo */
-            --card-bg: #ffffff;
-            --primary: #f472b6; /* Rosa chicle */
-            --secondary: #60a5fa; /* Azul cielo */
-            --accent: #34d399; /* Verde menta */
-            --text-main: #4b5563;
-            --text-light: #9ca3af;
+            --bg: #eef7ff;        /* Fondo azul muy claro */
+            --card: #ffffff;      /* Fondo blanco para la tarjeta */
+            --primary: #3498db;   /* Azul principal (títulos, barra de progreso, botón difícil) */
+            --secondary: #5dade2; /* Azul secundario (botón medio) */
+            --accent: #48c9b0;    /* Verde azulado menta (botón fácil y respuestas correctas) */
+            --text: #2c3e50;      /* Texto gris azulado oscuro */
+            --wrong: #e74c3c;     /* Rojo suave para errores */
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Quicksand', sans-serif;
         }
 
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            /* Un sutil degradado azul de fondo */
+            background-image: linear-gradient(to top, #eef7ff 0%, #d9eafd 100%);
         }
 
         .container {
-            background: var(--card-bg);
+            background: var(--card);
             width: 100%;
-            max-width: 600px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(244, 114, 182, 0.15);
-            overflow: hidden;
-            padding: 30px;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 30px;
+            /* Sombra azulada suave */
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.15);
             text-align: center;
-            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
-            color: var(--primary);
-            font-size: 2rem;
-            margin-bottom: 10px;
+        /* --- Pantalla de Inicio --- */
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
         }
 
-        p.subtitle {
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
-
-        /* MENU SELECTION */
-        .category-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
+        .btn-cat {
+            padding: 20px;
             border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 20px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            color: white; /* Texto blanco para mejor contraste en los botones azules */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
-        .cat-easy { background: linear-gradient(135deg, #34d399, #10b981); }
-        .cat-med { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
-        .cat-hard { background: linear-gradient(135deg, #f472b6, #db2777); }
-
-        .category-btn:hover {
+        .btn-cat:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
+        
+        /* Asignación de colores a los botones */
+        .easy { background-color: var(--accent); }
+        .med { background-color: var(--secondary); }
+        .hard { background-color: var(--primary); }
 
-        /* QUIZ SECTION */
-        .hide { display: none; }
+        /* --- Quiz UI --- */
+        .hidden { display: none; }
 
         .progress-bar {
             width: 100%;
-            height: 10px;
-            background-color: #f3f4f6;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            height: 12px; /* Un poco más gruesa */
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin-bottom: 25px;
             overflow: hidden;
         }
 
-        .progress-fill {
+        #progress {
             height: 100%;
-            background-color: var(--secondary);
+            background: var(--primary);
             width: 0%;
-            transition: width 0.3s ease;
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .question-text {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: var(--text-main);
+        .question-box h2 {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: var(--text);
         }
 
         .options-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
         }
 
-        .option-btn {
-            background: #fff;
-            border: 2px solid #e5e7eb;
-            padding: 15px;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            color: var(--text-main);
+        .option {
+            padding: 18px 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 18px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
+            font-size: 1.05rem;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
         }
 
-        .option-btn:hover:not([disabled]) {
-            border-color: var(--secondary);
-            background-color: #eff6ff;
+        .option:hover {
+            border-color: var(--primary);
+            background-color: #f0faff; /* Un azul muy clarito al pasar el mouse */
         }
 
-        .option-btn.correct {
-            background-color: #d1fae5;
-            border-color: #10b981;
-            color: #065f46;
+        .correct {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: white !important;
         }
 
-        .option-btn.wrong {
-            background-color: #fee2e2;
-            border-color: #ef4444;
-            color: #991b1b;
+        .incorrect {
+            background-color: var(--wrong) !important;
+            border-color: var(--wrong) !important;
+            color: white !important;
         }
 
-        /* RESULTS */
-        .score-display {
-            font-size: 3rem;
+        /* --- Resultado --- */
+        .score-text {
+            font-size: 4rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 20px 0;
+            margin: 30px 0;
+            text-shadow: 2px 2px 0px #d6eaf8;
         }
 
-        .result-msg {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-
-        .home-btn {
-            background: var(--text-main);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
+        .btn-restart {
+            margin-top: 30px;
+            padding: 15px 35px;
             border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: background 0.2s, transform 0.2s;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
+        .btn-restart:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
         }
 
+        /* Decoración */
+        .decorator {
+            position: absolute;
+            font-size: 6rem;
+            opacity: 0.03;
+            z-index: 0;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-container">
-        <div id="start-screen" class="fade-in">
-            <h1>Anatomía Quiz 🦴</h1>
-            <p class="subtitle">Selecciona tu nivel de dificultad</p>
-            
-            <button class="category-btn cat-easy" onclick="startQuiz('easy')">
-                🌱 Fácil (Generalidades)
-            </button>
-            <button class="category-btn cat-med" onclick="startQuiz('intermediate')">
-                💧 Intermedio (Conceptos)
-            </button>
-            <button class="category-btn cat-hard" onclick="startQuiz('hard')">
-                🔥 Difícil (Aplicación)
-            </button>
+    <div class="container">
+        <div class="decorator" style="top: -20px; left: -20px; transform: rotate(-15deg);">🦴</div>
+        <div class="decorator" style="bottom: -20px; right: -20px; transform: rotate(15deg);">🧠</div>
+
+        <div id="home">
+            <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 10px;">Anatomía Quiz 💙</h1>
+            <p style="color: #7f8c8d; font-size: 1.1rem;">Selecciona un nivel para empezar</p>
+            <div class="category-list">
+                <button class="btn-cat easy" onclick="startQuiz('easy')">🌱 Nivel Fácil</button>
+                <button class="btn-cat med" onclick="startQuiz('med')">💧 Nivel Intermedio</button>
+                <button class="btn-cat hard" onclick="startQuiz('hard')">🔥 Nivel Difícil</button>
+            </div>
         </div>
 
-        <div id="quiz-screen" class="hide">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress"></div>
+        <div id="quiz" class="hidden">
+            <div class="progress-bar"><div id="progress"></div></div>
+            <p id="counter" style="font-weight: 700; margin-bottom: 15px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;">Pregunta 1/10</p>
+            <div class="question-box">
+                <h2 id="question-text">Pregunta aquí...</h2>
+                <div id="options" class="options-grid"></div>
             </div>
-            
-            <div class="question-header">
-                <span style="font-size: 0.9rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px;">Pregunta <span id="q-number">1</span>/10</span>
-            </div>
-
-            <p class="question-text" id="question">¿Texto de la pregunta?</p>
-
-            <div class="options-grid" id="options-container">
-                </div>
         </div>
 
-        <div id="result-screen" class="hide">
-            <h1>¡Completado! 🎉</h1>
-            <p>Tu puntuación final es:</p>
-            
-            <div class="score-display">
-                <span id="score">0</span>/10
-            </div>
-            
-            <p class="result-msg" id="result-message">¡Buen trabajo!</p>
-            
-            <button class="home-btn" onclick="goHome()">Volver al Menú</button>
+        <div id="results" class="hidden">
+            <h1 style="color: var(--text);">¡Examen Completado! 🎉</h1>
+            <p style="color: #7f8c8d; margin-top: 10px;">Tu puntuación final es:</p>
+            <div class="score-text" id="final-score">0/10</div>
+            <p id="feedback" style="font-size: 1.2rem; font-weight: 600; color: var(--secondary);"></p>
+            <button class="btn-restart" onclick="location.reload()">Volver al Inicio</button>
         </div>
     </div>
 
     <script>
-        // DATOS DEL EXAMEN
-        const quizData = {
+        const exams = {
             easy: [
-                { q: "¿Cuál es la posición anatómica estándar?", options: ["Acostado", "De pie, con los brazos a los lados y palmas adelante", "Sentado", "En cuclillas"], correct: 1 },
-                { q: "¿Qué plano divide el cuerpo en partes anterior y posterior?", options: ["Plano sagital", "Plano frontal", "Plano transversal", "Plano oblicuo"], correct: 1 },
-                { q: "¿Cuál de los siguientes es un tipo de hueso largo?", options: ["Húmero", "Cráneo", "Esternón", "Escápula"], correct: 0 },
-                { q: "¿Qué tipo de articulación permite el movimiento en un solo plano?", options: ["Articulación esferoidea", "Articulación en bisagra", "Articulación pivotante", "Articulación sinartrosis"], correct: 1 },
-                { q: "¿Cuál es el término que describe una estructura más cercana al plano medio?", options: ["Lateral", "Medial", "Distal", "Proximal"], correct: 1 },
-                { q: "¿Qué término describe el movimiento de alejar una extremidad del cuerpo?", options: ["Aducción", "Abducción", "Rotación", "Flexión"], correct: 1 },
-                { q: "¿Cuál de los siguientes es un tipo de hueso corto?", options: ["Fémur", "Carpo", "Radio", "Clavícula"], correct: 1 },
-                { q: "¿Qué tipo de movimiento implica doblar una parte del cuerpo?", options: ["Extensión", "Flexión", "Rotación", "Elevación"], correct: 1 },
-                { q: "¿Qué plano divide el cuerpo en partes superior e inferior?", options: ["Plano sagital", "Plano frontal", "Plano transversal", "Plano coronal"], correct: 2 },
-                { q: "¿Término para una estructura más alejada del punto de origen?", options: ["Proximal", "Distal", "Medial", "Lateral"], correct: 1 }
+                { q: "¿Cuál es la posición anatómica estándar?", o: ["Acostado", "De pie, con los brazos a los lados y las palmas hacia adelante", "Sentado", "En cuclillas"], a: 1 },
+                { q: "¿Qué plano divide el cuerpo en partes anterior y posterior?", o: ["Plano sagital", "Plano frontal", "Plano transversal", "Plano oblicuo"], a: 1 },
+                { q: "¿Cuál de los siguientes es un tipo de hueso largo?", o: ["Húmero", "Cráneo", "Esternón", "Escápula"], a: 0 },
+                { q: "¿Qué tipo de articulación permite el movimiento en un solo plano?", o: ["Articulación esferoidea", "Articulación en bisagra", "Articulación pivotante", "Articulación sinartrosis"], a: 1 },
+                { q: "¿Cuál es el término que describe una estructura más cercana al plano medio del cuerpo?", o: ["Lateral", "Medial", "Distal", "Proximal"], a: 1 },
+                { q: "¿Qué término se utiliza para describir el movimiento de alejar una extremidad del cuerpo?", o: ["Aducción", "Abducción", "Rotación", "Flexión"], a: 1 },
+                { q: "¿Cuál de los siguientes es un tipo de hueso corto?", o: ["Fémur", "Carpo", "Radio", "Clavícula"], a: 1 },
+                { q: "¿Qué tipo de movimiento implica doblar una parte del cuerpo?", o: ["Extensión", "Flexión", "Rotación", "Elevación"], a: 1 },
+                { q: "¿Qué plano divide el cuerpo en partes superior e inferior?", o: ["Plano sagital", "Plano frontal", "Plano transversal", "Plano coronal"], a: 2 },
+                { q: "¿Cuál es el término que se utiliza para describir una estructura más alejada del punto de origen?", o: ["Proximal", "Distal", "Medial", "Lateral"], a: 1 }
             ],
-            intermediate: [
-                { q: "¿Cuál describe mejor la posición anatómica?", options: ["Acostado boca arriba", "De pie, pies juntos, palmas adelante", "Sentado piernas cruzadas", "De pie, brazos levantados"], correct: 1 },
-                { q: "¿Qué plano divide el cuerpo en mitades derecha e izquierda?", options: ["Plano frontal", "Plano sagital", "Plano transversal", "Plano horizontal"], correct: 1 },
-                { q: "¿Cuál es un tipo de hueso irregular?", options: ["Clavícula", "Vértebra", "Radio", "Escápula"], correct: 1 },
-                { q: "¿Qué articulación permite la rotación (como en el cuello)?", options: ["Bisagra", "Esferoidea", "Pivotante", "Cartilaginosa"], correct: 2 },
-                { q: "¿Término para una estructura alejada de la línea media?", options: ["Medial", "Lateral", "Proximal", "Distal"], correct: 1 },
-                { q: "¿Movimiento de elevar una extremidad hacia arriba?", options: ["Depresión", "Elevación", "Flexión", "Rotación"], correct: 1 },
-                { q: "¿Hueso con forma similar a un cubo?", options: ["Hueso largo", "Hueso plano", "Hueso corto", "Hueso irregular"], correct: 2 },
-                { q: "¿Movimiento de girar una parte del cuerpo hacia adentro?", options: ["Rotación medial", "Rotación lateral", "Abducción", "Aducción"], correct: 0 },
-                { q: "¿Qué plano divide al cuerpo en anterior y posterior?", options: ["Sagital", "Coronal", "Transversal", "Horizontal"], correct: 1 },
-                { q: "¿Doblar una articulación (ej. mano al hombro)?", options: ["Extensión", "Flexión", "Abducción", "Rotación"], correct: 1 }
+            med: [
+                { q: "¿Cuál de las siguientes afirmaciones describe mejor la posición anatómica?", o: ["Acostado boca arriba con las manos sobre el abdomen", "De pie, con los pies juntos y las palmas hacia adelante", "Sentado con las piernas cruzadas", "De pie, con los brazos levantados"], a: 1 },
+                { q: "¿Qué plano se utiliza para dividir el cuerpo en mitades derecha e izquierda?", o: ["Plano frontal", "Plano sagital", "Plano transversal", "Plano horizontal"], a: 1 },
+                { q: "¿Cuál de los siguientes es un tipo de hueso irregular?", o: ["Clavícula", "Vértebra", "Radio", "Escápula"], a: 1 },
+                { q: "¿Qué tipo de articulación permite el movimiento de rotación, como en el caso del cuello?", o: ["Articulación en bisagra", "Articulación esferoidea", "Articulación pivotante", "Articulación cartilaginosa"], a: 2 },
+                { q: "¿Qué término se utiliza para describir una estructura que está más alejada de la línea media del cuerpo?", o: ["Medial", "Lateral", "Proximal", "Distal"], a: 1 },
+                { q: "¿Cuál es el término que se usa para describir el movimiento de elevar una extremidad hacia arriba?", o: ["Depresión", "Elevación", "Flexión", "Rotación"], a: 1 },
+                { q: "¿Qué tipo de hueso se caracteriza por tener una forma similar a un cubo?", o: ["Hueso largo", "Hueso plano", "Hueso corto", "Hueso irregular"], a: 2 },
+                { q: "¿Qué tipo de movimiento implica girar una parte del cuerpo hacia adentro?", o: ["Rotación medial", "Rotación lateral", "Abducción", "Aducción"], a: 0 },
+                { q: "¿Cuál de los siguientes planos divide al cuerpo en partes anterior y posterior?", o: ["Plano sagital", "Plano coronal", "Plano transversal", "Plano horizontal"], a: 1 },
+                { q: "¿Qué término describe el movimiento de doblar una articulación, como el codo al acercar la mano al hombro?", o: ["Extensión", "Flexión", "Abducción", "Rotación"], a: 1 }
             ],
             hard: [
-                { q: "¿Importancia de las palmas hacia adelante en posición anatómica?", options: ["Identificar órganos internos", "Referencia uniforme para ubicación", "Facilitar flexión", "Determinar postura al caminar"], correct: 1 },
-                { q: "¿Relación entre plano sagital y ejes de movimiento?", options: ["Permite flexión/extensión (Eje vertical)", "Rotación eje horizontal", "Facilita abducción/aducción (según tu texto)", "Sin relación"], correct: 2 }, 
-                { q: "¿Ejemplo clásico de hueso largo y su función?", options: ["Escápula (soporte)", "Fémur (palanca extremidad inferior)", "Cráneo (protección)", "Húmero (rotación)"], correct: 1 },
-                { q: "¿Ejemplo y característica de articulación sinovial?", options: ["Codo (solo flexión)", "Hombro (múltiples planos/cavidad profunda)", "Sínfisis pubis (estable)", "Tobillo (rotación)"], correct: 1 },
-                { q: "¿Definición correcta de 'proximal'?", options: ["Alejada del tronco", "Cerca línea media", "Cercana al punto de origen", "Parte inferior del cuerpo"], correct: 2 },
-                { q: "¿Definición de 'aducción'?", options: ["Alejarse del cuerpo", "Girar al eje medial", "Acercar extremidad a línea media", "Elevar hacia arriba"], correct: 2 },
-                { q: "¿Hueso irregular y su función?", options: ["Esternón", "Vértebra (soporte/protección médula)", "Radio", "Escápula"], correct: 1 },
-                { q: "¿Característica típica de articulación sinovial?", options: ["Sin líquido sinovial", "Cápsula con líquido sinovial", "Tejido fibroso", "Solo deslizamiento"], correct: 1 },
-                { q: "¿Definición correcta de 'distal'?", options: ["Cerca del tronco", "Alejada de línea media", "Alejada del punto de origen", "Parte superior"], correct: 2 },
-                { q: "¿Descripción de rotación lateral?", options: ["Girar hacia línea media", "Girar alejando de línea media", "Solo sinoviales", "Solo miembros inferiores"], correct: 1 }
+                { q: "En la posición anatómica estándar, se considera que el cuerpo humano está orientado de tal manera que las palmas de las manos están dirigidas hacia adelante. ¿Cuál es la importancia de esta posición en el estudio de la anatomía?", o: ["Facilita la identificación de los órganos internos.", "Proporciona un punto de referencia uniforme para describir la ubicación de estructuras.", "Permite realizar movimientos de flexión y extensión con mayor facilidad.", "Ayuda a determinar la postura correcta al caminar."], a: 1 },
+                { q: "En el contexto de los planos anatómicos, el plano sagital se utiliza para dividir el cuerpo en mitades izquierda y derecha. ¿Cuál de las siguientes afirmaciones describe mejor la relación entre el plano sagital y los ejes de movimiento?", o: ["El plano sagital permite movimientos de flexión y extensión a lo largo del eje vertical.", "El plano sagital está relacionado con movimientos de rotación alrededor del eje horizontal.", "El plano sagital facilita movimientos de abducción y aducción a lo largo del eje anteroposterior.", "El plano sagital no está relacionado con ningún eje de movimiento."], a: 2 },
+                { q: "Dentro de la clasificación de los huesos según su forma, los huesos largos son fundamentales para el movimiento y la locomoción. ¿Cuál de las siguientes estructuras es un ejemplo clásico de un hueso largo y cuál es su función principal en el cuerpo?", o: ["Escápula; proporciona soporte para los músculos del hombro.", "Fémur; actúa como palanca para el movimiento de las extremidades inferiores.", "Cráneo; protege el cerebro y ofrece puntos de anclaje para los músculos.", "Húmero; permite la rotación del brazo en múltiples direcciones."], a: 1 },
+                { q: "Las articulaciones pueden clasificarse según su estructura y función. ¿Cuál de las siguientes articulaciones es un ejemplo de una articulación sinovial y qué características únicas presenta que la diferencian de otros tipos de articulaciones?", o: ["Articulación del codo; permite solo movimiento de flexión y extensión.", "Articulación del hombro; permite movimientos en múltiples planos gracias a su cavidad articular profunda.", "Articulación de la sínfisis del pubis; proporciona estabilidad y poco movimiento.", "Articulación del tobillo; permite principalmente el movimiento de rotación."], a: 1 },
+                { q: "En el estudio de la anatomía, los términos de localización son esenciales para describir la posición de las estructuras en el cuerpo humano. ¿Cuál de las siguientes afirmaciones es correcta respecto al término 'proximal'?", o: ["Se refiere a una estructura que está más alejada del tronco del cuerpo.", "Indica que una estructura está más cerca de la línea media del cuerpo.", "Describe una posición más cercana al punto de origen de una extremidad.", "Se utiliza para referirse a estructuras que están situadas en la parte inferior del cuerpo."], a: 2 },
+                { q: "El movimiento de una extremidad hacia el cuerpo se describe con un término específico. ¿Cuál de las siguientes definiciones corresponde correctamente al término 'aducción' en el contexto del movimiento articular?", o: ["Movimiento de una extremidad alejándose del cuerpo.", "Movimiento que implica girar una parte del cuerpo hacia el eje medial.", "Movimiento que acerca una extremidad hacia la línea media del cuerpo.", "Movimiento que implica elevar una extremidad hacia arriba."], a: 2 },
+                { q: "Los huesos irregulares tienen formas complejas y desempeñan funciones específicas en el cuerpo humano. ¿Cuál de los siguientes huesos es considerado un hueso irregular y qué función cumple en el sistema esquelético?", o: ["Esternón; protege los órganos vitales en el tórax.", "Vértebra; proporciona soporte estructural y protección a la médula espinal.", "Radio; permite la rotación del antebrazo.", "Escápula; conecta el brazo con el tronco."], a: 1 },
+                { q: "Las articulaciones sinoviales se caracterizan por su capacidad de permitir una amplia variedad de movimientos. ¿Cuál de las siguientes características es típica de las articulaciones sinoviales?", o: ["Carecen de líquido sinovial y tienen cartílago hialino.", "Tienen una cápsula articular que encierra la cavidad articular llena de líquido sinovial.", "Están unidas por tejido fibroso que limita el movimiento.", "Permiten solo movimientos de deslizamiento."], a: 1 },
+                { q: "El término 'distal' se utiliza en anatomía para describir la ubicación de una estructura en relación con otra. ¿Cuál de las siguientes afirmaciones es correcta respecto a este término?", o: ["Indica que una estructura está más cerca del tronco del cuerpo.", "Se refiere a una estructura que está más alejada de la línea media.", "Describe una ubicación que está más alejada del punto de origen de una extremidad.", "Se utiliza para referirse a estructuras que están situadas en la parte superior del cuerpo."], a: 2 },
+                { q: "El movimiento de rotación es fundamental para muchas actividades diarias. ¿Cuál de las siguientes afirmaciones describe correctamente el movimiento de rotación lateral en una articulación?", o: ["Implica girar una parte del cuerpo hacia la línea media.", "Se refiere a girar una parte del cuerpo alejándola de la línea media.", "Es un movimiento que solo ocurre en articulaciones sinoviales.", "Se produce únicamente en las articulaciones de los miembros inferiores."], a: 1 }
             ]
         };
 
-        // ESTADO DEL JUEGO
-        let currentQuestions = [];
+        let currentExam = [];
         let currentIndex = 0;
         let score = 0;
-        let isAnswering = false;
 
-        // ELEMENTOS DOM
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const resultScreen = document.getElementById('result-screen');
-        const questionText = document.getElementById('question');
-        const optionsContainer = document.getElementById('options-container');
-        const progressFill = document.getElementById('progress');
-        const qNumber = document.getElementById('q-number');
-        const scoreDisplay = document.getElementById('score');
-        const resultMsg = document.getElementById('result-message');
-
-        function startQuiz(category) {
-            currentQuestions = quizData[category];
+        function startQuiz(cat) {
+            currentExam = exams[cat];
             currentIndex = 0;
             score = 0;
-            isAnswering = false;
-
-            startScreen.classList.add('hide');
-            resultScreen.classList.add('hide');
-            quizScreen.classList.remove('hide');
-            quizScreen.classList.add('fade-in');
-
-            loadQuestion();
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            showQuestion();
         }
 
-        function loadQuestion() {
-            isAnswering = true;
-            const data = currentQuestions[currentIndex];
+        function showQuestion() {
+            const qData = currentExam[currentIndex];
+            document.getElementById('question-text').innerText = qData.q;
+            document.getElementById('counter').innerText = `Pregunta ${currentIndex + 1}/10`;
+            document.getElementById('progress').style.width = `${(currentIndex / 10) * 100}%`;
             
-            // Actualizar UI
-            qNumber.innerText = currentIndex + 1;
-            const progressPercent = ((currentIndex) / currentQuestions.length) * 100;
-            progressFill.style.width = `${progressPercent}%`;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
             
-            questionText.innerText = data.q;
-            optionsContainer.innerHTML = '';
-
-            data.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.classList.add('option-btn');
-                btn.onclick = () => checkAnswer(index, data.correct, btn);
-                optionsContainer.appendChild(btn);
+            qData.o.forEach((option, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option';
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(i, qData.a, btn);
+                optionsDiv.appendChild(btn);
             });
         }
 
-        function checkAnswer(selected, correct, btnElement) {
-            if (!isAnswering) return;
-            isAnswering = false; // Bloquear clicks múltiples
-
-            const allButtons = optionsContainer.querySelectorAll('.option-btn');
+        function checkAnswer(selected, correct, btn) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.style.pointerEvents = 'none'); // Deshabilitar clics
 
             if (selected === correct) {
-                btnElement.classList.add('correct');
+                btn.classList.add('correct');
                 score++;
             } else {
-                btnElement.classList.add('wrong');
-                // Mostrar la correcta
-                allButtons[correct].classList.add('correct');
+                btn.classList.add('incorrect');
+                options[correct].classList.add('correct');
             }
 
-            // Deshabilitar todos los botones
-            allButtons.forEach(btn => btn.disabled = true);
-
-            // Esperar y pasar a la siguiente
             setTimeout(() => {
                 currentIndex++;
-                if (currentIndex < currentQuestions.length) {
-                    loadQuestion();
+                if (currentIndex < currentExam.length) {
+                    showQuestion();
                 } else {
                     showResults();
                 }
-            }, 1200);
+            }, 1500);
         }
 
         function showResults() {
-            quizScreen.classList.add('hide');
-            resultScreen.classList.remove('hide');
-            resultScreen.classList.add('fade-in');
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/10`;
             
-            scoreDisplay.innerText = score;
-            
-            if(score === 10) {
-                resultMsg.innerText = "¡Perfecto! Eres un experto en anatomía 🧠✨";
-            } else if (score >= 7) {
-                resultMsg.innerText = "¡Muy bien! Tienes buenos conocimientos 🦴";
-            } else {
-                resultMsg.innerText = "Sigue practicando, ¡tú puedes! 📚";
-            }
-        }
-
-        function goHome() {
-            resultScreen.classList.add('hide');
-            startScreen.classList.remove('hide');
-            startScreen.classList.add('fade-in');
+            let message = "";
+            if(score === 10) message = "¡Perfecto! Eres un experto en anatomía. 🌟";
+            else if(score >= 7) message = "¡Muy bien hecho! Sigue así. ✨";
+            else message = "¡Buen intento! Sigue estudiando para mejorar. 📚";
+            document.getElementById('feedback').innerText = message;
         }
     </script>
 </body>
